@@ -32,15 +32,6 @@ export const demoOrders = [
   { name: "SO-2026-00171", customer: "Nexa Gadget Store", transaction_date: "2026-07-18", grand_total: 41250, status: "Cancelled", stage: "Quotation" },
 ];
 
-export const demoInventory = [
-  { item_code: "MOB-0001", item_name: "Novaphone X7 Pro", warehouse: "Finished Goods - MFG", actual_qty: 124, reserved_qty: 40, valuation_rate: 51200 },
-  { item_code: "MOB-0003", item_name: "Novaphone Lite 5G", warehouse: "Finished Goods - MFG", actual_qty: 340, reserved_qty: 96, valuation_rate: 13100 },
-  { item_code: "MOB-0004", item_name: "Zentra S22 Ultra", warehouse: "Refurbished Stock - MFG", actual_qty: 36, reserved_qty: 6, valuation_rate: 29800 },
-  { item_code: "SPR-0031", item_name: "X7 AMOLED Display Module", warehouse: "Stores - MFG", actual_qty: 145, reserved_qty: 22, valuation_rate: 5100 },
-  { item_code: "ACC-0011", item_name: "80W GaN Charger", warehouse: "Stores - MFG", actual_qty: 980, reserved_qty: 150, valuation_rate: 940 },
-  { item_code: "MOB-0006", item_name: "Orbit Fold 3", warehouse: "Work In Progress - MFG", actual_qty: 12, reserved_qty: 0, valuation_rate: 71400 },
-];
-
 export const demoDealers = [
   { name: "DLR-0007", dealer_name: "Meridian Telecom Pvt Ltd", territory: "West Zone", credit_limit: 2500000, outstanding: 1379980, tier: "Platinum", status: "Active" },
   { name: "DLR-0012", dealer_name: "Kavya Mobile World", territory: "South Zone", credit_limit: 800000, outstanding: 264995, tier: "Gold", status: "Active" },

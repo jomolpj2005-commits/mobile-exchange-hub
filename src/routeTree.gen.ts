@@ -14,7 +14,6 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DealersRouteImport } from './routes/dealers'
 import { Route as ExchangeRouteImport } from './routes/exchange'
-import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -45,11 +44,6 @@ const DealersRoute = DealersRouteImport.update({
 const ExchangeRoute = ExchangeRouteImport.update({
   id: '/exchange',
   path: '/exchange',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -89,7 +83,6 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRoute
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -103,7 +96,6 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRoute
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -118,7 +110,6 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRoute
-  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
@@ -134,7 +125,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dealers'
     | '/exchange'
-    | '/inventory'
     | '/login'
     | '/orders'
     | '/profile'
@@ -148,7 +138,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dealers'
     | '/exchange'
-    | '/inventory'
     | '/login'
     | '/orders'
     | '/profile'
@@ -162,7 +151,6 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/dealers'
     | '/exchange'
-    | '/inventory'
     | '/login'
     | '/orders'
     | '/profile'
@@ -177,7 +165,6 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   DealersRoute: typeof DealersRoute
   ExchangeRoute: typeof ExchangeRoute
-  InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
@@ -221,13 +208,6 @@ declare module '@tanstack/react-router' {
       path: '/exchange'
       fullPath: '/exchange'
       preLoaderRoute: typeof ExchangeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -281,7 +261,6 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   DealersRoute: DealersRoute,
   ExchangeRoute: ExchangeRoute,
-  InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,

@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Boxes,
   LayoutDashboard,
   Package,
   Recycle,
@@ -31,7 +30,6 @@ const groups = [
   {
     label: "Operations",
     items: [
-      { to: "/inventory", label: "Inventory", icon: Boxes },
       { to: "/refurbishment", label: "Refurbishment", icon: Recycle },
     ],
   },
@@ -41,6 +39,10 @@ const groups = [
       { to: "/dealers", label: "Dealers", icon: UserRound },
       { to: "/exchange", label: "Wholesale Exchange", icon: Repeat2 },
     ],
+  },
+  {
+    label: "Account",
+    items: [{ to: "/profile", label: "Profile", icon: UserRound }],
   },
 ] as const;
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Boxes, IndianRupee, Recycle, Repeat2 } from "lucide-react";
+import { IndianRupee, Recycle, Repeat2 } from "lucide-react";
 import ErpLayout from "@/layouts/ErpLayout";
 import PageHeader from "@/components/PageHeader";
 import StatCard from "@/components/StatCard";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Dashboard | NovaCell Mobile ERP" },
       {
         property: "og:description",
-        content: "Track orders, stock, refurbishment jobs and dealer exchanges in one console.",
+        content: "Track orders, refurbishment jobs and dealer exchanges in one console.",
       },
     ],
   }),
@@ -47,9 +47,8 @@ function Dashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard label="Open Sales Value" value={formatCurrency(3644775)} hint="12 open sales orders" icon={IndianRupee} />
-        <StatCard label="Finished Goods" value="1,482 units" hint="Across 3 warehouses" icon={Boxes} />
         <StatCard label="Refurb In Progress" value="311 units" hint="42 awaiting quality check" icon={Recycle} />
         <StatCard label="Exchange Requests" value="18 active" hint="4 pending approval" icon={Repeat2} />
       </div>
