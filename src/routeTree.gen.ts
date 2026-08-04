@@ -12,8 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DealersRouteImport } from './routes/dealers'
+import { Route as ExchangeRouteImport } from './routes/exchange'
+import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as RefurbishmentRouteImport } from './routes/refurbishment'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
 
@@ -32,6 +37,21 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DealersRoute = DealersRouteImport.update({
+  id: '/dealers',
+  path: '/dealers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExchangeRoute = ExchangeRouteImport.update({
+  id: '/exchange',
+  path: '/exchange',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -40,6 +60,16 @@ const LoginRoute = LoginRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefurbishmentRoute = RefurbishmentRouteImport.update({
+  id: '/refurbishment',
+  path: '/refurbishment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
@@ -57,8 +87,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dealers': typeof DealersRoute
+  '/exchange': typeof ExchangeRoute
+  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/refurbishment': typeof RefurbishmentRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -66,8 +101,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dealers': typeof DealersRoute
+  '/exchange': typeof ExchangeRoute
+  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/refurbishment': typeof RefurbishmentRoute
   '/products/$id': typeof ProductsIdRoute
   '/products': typeof ProductsIndexRoute
 }
@@ -76,8 +116,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dealers': typeof DealersRoute
+  '/exchange': typeof ExchangeRoute
+  '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/refurbishment': typeof RefurbishmentRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -87,8 +132,13 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/dealers'
+    | '/exchange'
+    | '/inventory'
     | '/login'
     | '/orders'
+    | '/profile'
+    | '/refurbishment'
     | '/products/$id'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,8 +146,13 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/dealers'
+    | '/exchange'
+    | '/inventory'
     | '/login'
     | '/orders'
+    | '/profile'
+    | '/refurbishment'
     | '/products/$id'
     | '/products'
   id:
@@ -105,8 +160,13 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/dealers'
+    | '/exchange'
+    | '/inventory'
     | '/login'
     | '/orders'
+    | '/profile'
+    | '/refurbishment'
     | '/products/$id'
     | '/products/'
   fileRoutesById: FileRoutesById
@@ -115,8 +175,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  DealersRoute: typeof DealersRoute
+  ExchangeRoute: typeof ExchangeRoute
+  InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
   OrdersRoute: typeof OrdersRoute
+  ProfileRoute: typeof ProfileRoute
+  RefurbishmentRoute: typeof RefurbishmentRoute
   ProductsIdRoute: typeof ProductsIdRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
 }
@@ -144,6 +209,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dealers': {
+      id: '/dealers'
+      path: '/dealers'
+      fullPath: '/dealers'
+      preLoaderRoute: typeof DealersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exchange': {
+      id: '/exchange'
+      path: '/exchange'
+      fullPath: '/exchange'
+      preLoaderRoute: typeof ExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -156,6 +242,20 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refurbishment': {
+      id: '/refurbishment'
+      path: '/refurbishment'
+      fullPath: '/refurbishment'
+      preLoaderRoute: typeof RefurbishmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/': {
@@ -179,8 +279,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  DealersRoute: DealersRoute,
+  ExchangeRoute: ExchangeRoute,
+  InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
   OrdersRoute: OrdersRoute,
+  ProfileRoute: ProfileRoute,
+  RefurbishmentRoute: RefurbishmentRoute,
   ProductsIdRoute: ProductsIdRoute,
   ProductsIndexRoute: ProductsIndexRoute,
 }
