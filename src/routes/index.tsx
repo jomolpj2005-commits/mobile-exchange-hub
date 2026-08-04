@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { IndianRupee, Recycle, Repeat2, Truck } from "lucide-react";
+import { IndianRupee, Recycle, Repeat2 } from "lucide-react";
 import ErpLayout from "@/layouts/ErpLayout";
 import PageHeader from "@/components/PageHeader";
 import StatCard from "@/components/StatCard";
