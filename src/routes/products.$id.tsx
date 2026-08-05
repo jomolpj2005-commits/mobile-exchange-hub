@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import ErpLayout from "@/layouts/ErpLayout";
@@ -34,6 +34,7 @@ function ProductDetails() {
   const { id } = useParams({ from: "/products/$id" });
   const { data, loading } = useFetch(() => getProduct(id), [id]);
   const { add } = useCart();
+  const navigate = useNavigate();
 
   if (loading || !data) {
     return (
@@ -75,6 +76,24 @@ function ProductDetails() {
               }}
             >
               Add to cart
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                add({
+                  item_code: data.name,
+                  item_name: data.item_name,
+                  rate: data.standard_rate,
+                  qty: 1,
+                  condition: data.condition,
+                });
+                navigate({ to: "/checkout" });
+              }}
+            >
+              Buy now
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/exchange/new">Exchange offer</Link>
             </Button>
           </>
         }
