@@ -61,6 +61,11 @@ export async function updateDoc<T = Record<string, unknown>>(
 }
 
 /** Call a whitelisted server method: /api/method/<dotted.path> */
+export async function deleteDoc(doctype: string, name: string): Promise<void> {
+  await api.delete(`/api/resource/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`);
+}
+
+/** Call a whitelisted server method: /api/method/<dotted.path> */
 export async function callMethod<T = unknown>(method: string, args: unknown = {}): Promise<T> {
   const res = await api.post(`/api/method/${method}`, args);
   return res.data?.message ?? res.data;

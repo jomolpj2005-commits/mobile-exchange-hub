@@ -15,9 +15,12 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DealersRouteImport } from './routes/dealers'
 import { Route as ExchangeRouteImport } from './routes/exchange'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RefurbishmentRouteImport } from './routes/refurbishment'
+import { Route as ExchangeNewRouteImport } from './routes/exchange.new'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
 
@@ -51,9 +54,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrderSuccessRoute = OrderSuccessRouteImport.update({
+  id: '/order-success',
+  path: '/order-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentRoute = PaymentRouteImport.update({
+  id: '/payment',
+  path: '/payment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -65,6 +78,11 @@ const RefurbishmentRoute = RefurbishmentRouteImport.update({
   id: '/refurbishment',
   path: '/refurbishment',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ExchangeNewRoute = ExchangeNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => ExchangeRoute,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
@@ -82,11 +100,14 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -95,11 +116,14 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products': typeof ProductsIndexRoute
 }
@@ -109,11 +133,14 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -126,9 +153,12 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -139,9 +169,12 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products'
   id:
@@ -152,9 +185,12 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products/'
   fileRoutesById: FileRoutesById
@@ -164,9 +200,11 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   DealersRoute: typeof DealersRoute
-  ExchangeRoute: typeof ExchangeRoute
+  ExchangeRoute: typeof ExchangeRouteWithChildren
   LoginRoute: typeof LoginRoute
+  OrderSuccessRoute: typeof OrderSuccessRoute
   OrdersRoute: typeof OrdersRoute
+  PaymentRoute: typeof PaymentRoute
   ProfileRoute: typeof ProfileRoute
   RefurbishmentRoute: typeof RefurbishmentRoute
   ProductsIdRoute: typeof ProductsIdRoute
@@ -217,11 +255,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/order-success': {
+      id: '/order-success'
+      path: '/order-success'
+      fullPath: '/order-success'
+      preLoaderRoute: typeof OrderSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders': {
       id: '/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -237,6 +289,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/refurbishment'
       preLoaderRoute: typeof RefurbishmentRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/exchange/new': {
+      id: '/exchange/new'
+      path: '/new'
+      fullPath: '/exchange/new'
+      preLoaderRoute: typeof ExchangeNewRouteImport
+      parentRoute: typeof ExchangeRoute
     }
     '/products/': {
       id: '/products/'
@@ -255,14 +314,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ExchangeRouteChildren {
+  ExchangeNewRoute: typeof ExchangeNewRoute
+}
+
+const ExchangeRouteChildren: ExchangeRouteChildren = {
+  ExchangeNewRoute: ExchangeNewRoute,
+}
+
+const ExchangeRouteWithChildren = ExchangeRoute._addFileChildren(
+  ExchangeRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   DealersRoute: DealersRoute,
-  ExchangeRoute: ExchangeRoute,
+  ExchangeRoute: ExchangeRouteWithChildren,
   LoginRoute: LoginRoute,
+  OrderSuccessRoute: OrderSuccessRoute,
   OrdersRoute: OrdersRoute,
+  PaymentRoute: PaymentRoute,
   ProfileRoute: ProfileRoute,
   RefurbishmentRoute: RefurbishmentRoute,
   ProductsIdRoute: ProductsIdRoute,

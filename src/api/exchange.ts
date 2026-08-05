@@ -26,3 +26,23 @@ export function receiveUsedMobile(name: string, payload: unknown) {
 export function calculateBalance(name: string) {
   return callMethod("mobile_erp.exchange.calculate_balance", { name });
 }
+/** Master data for the customer exchange wizard (served by ERPNext when connected). */
+export function getExchangeCategories() {
+  return callMethod<unknown[]>("mobile_erp.exchange.get_categories");
+}
+
+export function getExchangeBrands(category: string) {
+  return callMethod<unknown[]>("mobile_erp.exchange.get_brands", { category });
+}
+
+export function getExchangeModels(category: string, brand: string) {
+  return callMethod<unknown[]>("mobile_erp.exchange.get_models", { category, brand });
+}
+
+/** Valuation is computed by ERPNext from the condition answers. */
+export function evaluateExchange(payload: unknown) {
+  return callMethod<{ estimated_value: number; bonus: number }>(
+    "mobile_erp.exchange.evaluate",
+    payload,
+  );
+}

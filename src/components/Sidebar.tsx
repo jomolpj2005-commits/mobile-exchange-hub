@@ -38,6 +38,7 @@ const groups = [
     items: [
       { to: "/dealers", label: "Dealers", icon: UserRound },
       { to: "/exchange", label: "Wholesale Exchange", icon: Repeat2 },
+      { to: "/exchange/new", label: "Exchange Offer", icon: Repeat2 },
     ],
   },
   {
