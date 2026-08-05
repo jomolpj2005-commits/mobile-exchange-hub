@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RefurbishmentRouteImport } from './routes/refurbishment'
+import { Route as ExchangeNewRouteImport } from './routes/exchange.new'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
 
@@ -66,6 +67,11 @@ const RefurbishmentRoute = RefurbishmentRouteImport.update({
   path: '/refurbishment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExchangeNewRoute = ExchangeNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => ExchangeRoute,
+} as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
@@ -82,11 +88,12 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -95,11 +102,12 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products': typeof ProductsIndexRoute
 }
@@ -109,11 +117,12 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRoute
+  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
+  '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
   '/products/': typeof ProductsIndexRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/refurbishment'
+    | '/exchange/new'
     | '/products/$id'
     | '/products/'
   fileRoutesById: FileRoutesById
@@ -164,7 +176,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   DealersRoute: typeof DealersRoute
-  ExchangeRoute: typeof ExchangeRoute
+  ExchangeRoute: typeof ExchangeRouteWithChildren
   LoginRoute: typeof LoginRoute
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
@@ -238,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RefurbishmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exchange/new': {
+      id: '/exchange/new'
+      path: '/new'
+      fullPath: '/exchange/new'
+      preLoaderRoute: typeof ExchangeNewRouteImport
+      parentRoute: typeof ExchangeRoute
+    }
     '/products/': {
       id: '/products/'
       path: '/products'
@@ -255,12 +274,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ExchangeRouteChildren {
+  ExchangeNewRoute: typeof ExchangeNewRoute
+}
+
+const ExchangeRouteChildren: ExchangeRouteChildren = {
+  ExchangeNewRoute: ExchangeNewRoute,
+}
+
+const ExchangeRouteWithChildren = ExchangeRoute._addFileChildren(
+  ExchangeRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   DealersRoute: DealersRoute,
-  ExchangeRoute: ExchangeRoute,
+  ExchangeRoute: ExchangeRouteWithChildren,
   LoginRoute: LoginRoute,
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
