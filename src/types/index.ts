@@ -38,6 +38,9 @@ export type ExchangeDraft = {
   color?: string;
   purchase_year?: string;
   answers: ExchangeAnswers;
+  new_item_code?: string;
+  new_item_name?: string;
+  new_item_price?: number;
   base_value: number;
   estimated_value: number;
   bonus: number;
