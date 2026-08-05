@@ -15,7 +15,9 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DealersRouteImport } from './routes/dealers'
 import { Route as ExchangeRouteImport } from './routes/exchange'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RefurbishmentRouteImport } from './routes/refurbishment'
 import { Route as ExchangeNewRouteImport } from './routes/exchange.new'
@@ -52,9 +54,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrderSuccessRoute = OrderSuccessRouteImport.update({
+  id: '/order-success',
+  path: '/order-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentRoute = PaymentRouteImport.update({
+  id: '/payment',
+  path: '/payment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -90,7 +102,9 @@ export interface FileRoutesByFullPath {
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
@@ -104,7 +118,9 @@ export interface FileRoutesByTo {
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
@@ -119,7 +135,9 @@ export interface FileRoutesById {
   '/dealers': typeof DealersRoute
   '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
+  '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
+  '/payment': typeof PaymentRoute
   '/profile': typeof ProfileRoute
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
@@ -135,7 +153,9 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
     | '/exchange/new'
@@ -149,7 +169,9 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
     | '/exchange/new'
@@ -163,7 +185,9 @@ export interface FileRouteTypes {
     | '/dealers'
     | '/exchange'
     | '/login'
+    | '/order-success'
     | '/orders'
+    | '/payment'
     | '/profile'
     | '/refurbishment'
     | '/exchange/new'
@@ -178,7 +202,9 @@ export interface RootRouteChildren {
   DealersRoute: typeof DealersRoute
   ExchangeRoute: typeof ExchangeRouteWithChildren
   LoginRoute: typeof LoginRoute
+  OrderSuccessRoute: typeof OrderSuccessRoute
   OrdersRoute: typeof OrdersRoute
+  PaymentRoute: typeof PaymentRoute
   ProfileRoute: typeof ProfileRoute
   RefurbishmentRoute: typeof RefurbishmentRoute
   ProductsIdRoute: typeof ProductsIdRoute
@@ -229,11 +255,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/order-success': {
+      id: '/order-success'
+      path: '/order-success'
+      fullPath: '/order-success'
+      preLoaderRoute: typeof OrderSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders': {
       id: '/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -293,7 +333,9 @@ const rootRouteChildren: RootRouteChildren = {
   DealersRoute: DealersRoute,
   ExchangeRoute: ExchangeRouteWithChildren,
   LoginRoute: LoginRoute,
+  OrderSuccessRoute: OrderSuccessRoute,
   OrdersRoute: OrdersRoute,
+  PaymentRoute: PaymentRoute,
   ProfileRoute: ProfileRoute,
   RefurbishmentRoute: RefurbishmentRoute,
   ProductsIdRoute: ProductsIdRoute,
