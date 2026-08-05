@@ -32,7 +32,7 @@ export function AddressForm({
   onSubmit,
 }: {
   open: boolean;
-  initial?: Address | null;
+  initial?: Address | null | undefined;
   onClose: () => void;
   onSubmit: (values: Partial<Address>) => Promise<void> | void;
 }) {

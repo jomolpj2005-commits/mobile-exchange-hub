@@ -136,7 +136,7 @@ function ExchangeWizard() {
             <button
               key={c.slug}
               onClick={() => {
-                patch({ category: c.slug, brand: undefined, model: undefined });
+                patch({ category: c.slug, brand: "", model: "" });
                 setStep(2);
               }}
               className={cn(
@@ -161,7 +161,7 @@ function ExchangeWizard() {
           <div className="erp-panel p-5">
             <p className="erp-label">Select brand</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {(exchangeBrands[draft.category ?? ""] ?? exchangeBrands["other-electronics"]).map((b) => (
+              {(exchangeBrands[draft.category ?? ""] ?? exchangeBrands["other-electronics"] ?? []).map((b) => (
                 <button
                   key={b}
                   onClick={() => patch({ brand: b })}
@@ -358,7 +358,7 @@ function Picker({
   onChange,
 }: {
   label: string;
-  value?: string;
+  value?: string | undefined;
   options: string[];
   onChange: (v: string) => void;
 }) {

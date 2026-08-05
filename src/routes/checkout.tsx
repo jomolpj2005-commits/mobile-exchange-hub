@@ -302,7 +302,7 @@ function CheckoutPage() {
   );
 }
 
-function Field({ label, value }: { label: string; value?: string }) {
+function Field({ label, value }: { label: string; value?: string | undefined }) {
   return (
     <div>
       <dt className="erp-label">{label}</dt>

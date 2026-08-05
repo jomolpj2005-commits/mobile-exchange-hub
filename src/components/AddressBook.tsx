@@ -28,9 +28,9 @@ export function AddressBook({
 }: {
   customer: string | null;
   addresses: Address[];
-  selectable?: boolean;
-  selectedName?: string;
-  onSelect?: (a: Address) => void;
+  selectable?: boolean | undefined;
+  selectedName?: string | undefined;
+  onSelect?: ((a: Address) => void) | undefined;
   onChanged: () => void;
 }) {
   const [editing, setEditing] = useState<Address | null>(null);
