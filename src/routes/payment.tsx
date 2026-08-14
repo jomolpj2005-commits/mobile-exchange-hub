@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BadgeCheck, Banknote, CreditCard, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import ErpLayout from "@/layouts/ErpLayout";
@@ -15,12 +15,14 @@ import {
   createRazorpayOrder,
   verifyRazorpayPayment,
 } from "@/api/payment";
-import { loadRazorpay, openRazorpay } from "@/utils/razorpay";
+import { getSalesOrder } from "@/api/order";
+import { markExchangeOfferUsed } from "@/api/exchange";
 import { formatCurrency } from "@/utils/format";
+import { RazorpayGatewayModal } from "@/components/RazorpayGatewayModal";
 
 export const Route = createFileRoute("/payment")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    so: typeof search["so"] === "string" ? search["so"] : "",
+  validateSearch: (search: Record<string, unknown>): { so?: string } => ({
+    so: typeof search["so"] === "string" ? search["so"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -49,91 +51,83 @@ const SELLING_FLOW = [
 function PaymentPage() {
   const navigate = useNavigate();
   const { so } = Route.useSearch();
-  const { items, subtotal, clear } = useCart();
+  const { items: cartItems, subtotal: cartSubtotal, clear } = useCart();
   const { draft, reset } = useExchangeDraft();
   const { customer } = useCustomer();
   const [method, setMethod] = useState<"online" | "cod">("online");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const exchangeDiscount = draft.estimated_value + draft.bonus;
-  const shipping = subtotal > 0 && subtotal < 25000 ? 199 : 0;
-  const taxable = Math.max(0, subtotal - exchangeDiscount);
-  const gst = Math.round(taxable * 0.18);
-  const payable = Math.max(0, taxable + gst + shipping);
+  const [soDoc, setSoDoc] = useState<{
+    name?: string;
+    grand_total?: number;
+    net_total?: number;
+    items?: Array<{ item_code: string; item_name: string; qty: number; rate: number }>;
+  } | null>(null);
 
-  async function payOnline() {
-    setError(null);
-    setBusy(true);
-    try {
-      const ready = await loadRazorpay();
-      if (!ready) throw new Error("Could not load the Razorpay checkout script.");
-      const order = await createRazorpayOrder({ sales_order: so, amount: payable, currency: "INR" });
-      const instance = openRazorpay({
-        key: order.key_id,
-        order_id: order.order_id,
-        amount: order.amount,
-        currency: order.currency ?? "INR",
-        name: order.name ?? "NovaCell",
-        description: order.description ?? `Payment for ${so}`,
-        prefill: order.prefill ?? {
-          name: customer?.customer_name,
-          email: customer?.email_id,
-          contact: customer?.mobile_no,
-        },
-        theme: { color: "#1d4ed8" },
-        handler: async (response: Record<string, string>) => {
-          try {
-            const result = await verifyRazorpayPayment({
-              sales_order: so,
-              razorpay_order_id: response["razorpay_order_id"] ?? "",
-              razorpay_payment_id: response["razorpay_payment_id"] ?? "",
-              razorpay_signature: response["razorpay_signature"] ?? "",
-            });
-            clear();
-            reset();
-            navigate({
-              to: "/order-success",
-              search: { so, pe: result.payment_entry ?? "", mode: "Online" },
-            });
-          } catch {
-            setError("Payment could not be verified. Please retry or contact support.");
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setBusy(false);
-            setError("Payment was cancelled. You can retry whenever you are ready.");
-          },
-        },
-      });
-      if (!instance) throw new Error("Razorpay checkout is unavailable.");
-      instance.on("payment.failed", () => {
-        setBusy(false);
-        setError("Payment failed. Please retry with another method.");
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error && err.message
-          ? `${err.message} Check the Razorpay keys configured in ERPNext.`
-          : "Payment could not be started.",
-      );
-    } finally {
-      setBusy(false);
+  useEffect(() => {
+    if (so) {
+      getSalesOrder(so)
+        .then((res) => {
+          if (res) setSoDoc(res as any);
+        })
+        .catch((err) => {
+          console.error("Failed to load sales order details:", err);
+        });
     }
+  }, [so]);
+
+  const displayItems =
+    soDoc?.items && soDoc.items.length > 0
+      ? soDoc.items
+      : cartItems;
+
+  const displaySubtotal =
+    (soDoc as any)?.subtotal ??
+    (soDoc?.items && soDoc.items.length > 0
+      ? soDoc.items.reduce((s: number, i: any) => s + ((i.price_list_rate || i.rate || 0) * (i.qty || 1)), 0)
+      : cartSubtotal);
+
+  const exchangeDiscount =
+    (soDoc as any)?.discount_amount ||
+    (soDoc as any)?.exchange_discount ||
+    (draft && draft.estimated_value && draft.estimated_value > 0 && displayItems && displayItems.length > 0
+      ? (draft.estimated_value || 0) + (draft.bonus || 0)
+      : 0);
+
+  const shipping = displaySubtotal > 0 && displaySubtotal < 25000 ? 199 : 0;
+  const taxable = Math.max(0, displaySubtotal - exchangeDiscount);
+  const payable = taxable + shipping;
+
+  const [razorpayModalOpen, setRazorpayModalOpen] = useState(false);
+
+  function payOnline() {
+    setError(null);
+    setRazorpayModalOpen(true);
   }
 
   async function payCod() {
     setError(null);
     setBusy(true);
     try {
-      await createCashOnDeliveryOrder({ sales_order: so });
+      if (draft?.doc_name) {
+        try {
+          await markExchangeOfferUsed(draft.doc_name, so, exchangeDiscount);
+        } catch (excErr) {
+          console.error("Mark exchange offer used notice:", excErr);
+        }
+      }
+      const res = await createCashOnDeliveryOrder({ sales_order: so, payment_mode: "Cash in Hand" });
+      const pe = res?.payment_entry ?? "";
+      const dn = res?.delivery_note ?? "";
+      const si = res?.sales_invoice ?? "";
       clear();
       reset();
-      toast.success("Order placed — pay on delivery");
-      navigate({ to: "/order-success", search: { so, pe: "", mode: "Cash on Delivery" } });
-    } catch {
-      setError("Could not confirm the cash-on-delivery order. Please retry.");
+      toast.success("Order placed! Exchanged devices routed to Refurbishment.");
+      navigate({ to: "/order-success", search: { so, dn, si, pe, mode: "Cash in Hand" } });
+    } catch (e: any) {
+      console.error("Cash on delivery error:", e);
+      setError(e?.message || "Could not confirm the cash-in-hand order. Please retry.");
     } finally {
       setBusy(false);
     }
@@ -145,7 +139,6 @@ function PaymentPage() {
         title="Payment"
         subtitle="Complete the payment to move your Sales Order into fulfilment."
       />
-      <FlowSteps title="Selling flow" steps={SELLING_FLOW} activeIndex={3} />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <section className="space-y-3 lg:col-span-2">
@@ -191,21 +184,20 @@ function PaymentPage() {
           )}
 
           <ul className="space-y-2 text-sm">
-            {items.map((i) => (
+            {displayItems.map((i) => (
               <li key={i.item_code} className="flex justify-between gap-3">
                 <span className="min-w-0 truncate text-muted-foreground">
                   {i.item_name} × {i.qty}
                 </span>
-                <span className="shrink-0">{formatCurrency(i.rate * i.qty)}</span>
+                <span className="shrink-0">{formatCurrency(((i as any).price_list_rate || i.rate || 0) * (i.qty || 1))}</span>
               </li>
             ))}
           </ul>
 
-          <Row label="Subtotal" value={formatCurrency(subtotal)} />
+          <Row label="Subtotal" value={formatCurrency(displaySubtotal)} />
           {exchangeDiscount > 0 ? (
             <Row label="Exchange discount" value={`− ${formatCurrency(exchangeDiscount)}`} tone="success" />
           ) : null}
-          <Row label="GST @ 18%" value={formatCurrency(gst)} />
           <Row label="Shipping" value={shipping ? formatCurrency(shipping) : "Free"} />
           <div className="flex justify-between border-t border-border pt-3 font-semibold">
             <span>Final payable</span>
@@ -218,10 +210,39 @@ function PaymentPage() {
             onClick={method === "online" ? payOnline : payCod}
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgeCheck className="h-4 w-4" />}
-            {method === "online" ? `Pay ${formatCurrency(payable)}` : "Place COD order"}
+            Make Payment
           </Button>
         </aside>
       </div>
+
+      <RazorpayGatewayModal
+        open={razorpayModalOpen}
+        onOpenChange={setRazorpayModalOpen}
+        salesOrder={so || ""}
+        amount={payable}
+        customerName={customer?.customer_name}
+        customerEmail={customer?.email_id}
+        customerPhone={customer?.mobile_no}
+        onPaymentSuccess={async (res) => {
+          if (draft?.doc_name) {
+            try {
+              await markExchangeOfferUsed(draft.doc_name, so, exchangeDiscount);
+            } catch (excErr) {
+              console.error("Mark exchange offer used notice:", excErr);
+            }
+          }
+          const pe = res?.payment_entry ?? "";
+          const dn = res?.delivery_note ?? "";
+          const si = res?.sales_invoice ?? "";
+          clear();
+          reset();
+          toast.success("Razorpay payment verified! Exchanged devices routed to Refurbishment.");
+          navigate({
+            to: "/order-success",
+            search: { so, dn, si, pe, mode: "Razorpay" },
+          });
+        }}
+      />
     </ErpLayout>
   );
 }

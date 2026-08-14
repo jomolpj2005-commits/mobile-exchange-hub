@@ -1,19 +1,17 @@
 import { useState } from "react";
-import { Home, MapPin, Pencil, Trash2 } from "lucide-react";
+import { Home, MapPin, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AddressForm from "@/components/AddressForm";
 import {
   createAddress,
-  removeAddress,
-  setDefaultAddress,
   updateAddress,
 } from "@/api/address";
 import type { Address } from "@/types";
 
 export function formatAddress(a: Address) {
-  return [a.address_line1, a.address_line2, a.area, a.landmark, a.city, a.state, a.country, a.pincode]
+  return [a.address_line1, a.address_line2, a.city, a.state, a.country, a.pincode]
     .filter(Boolean)
     .join(", ");
 }
@@ -37,37 +35,24 @@ export function AddressBook({
   const [open, setOpen] = useState(false);
 
   async function save(values: Partial<Address>) {
-    if (!customer) {
-      toast.error("Connect ERPNext to save addresses.");
+    const custId = customer || (typeof window !== "undefined" ? localStorage.getItem("active_customer_name") || localStorage.getItem("active_dealer_email") : null);
+    
+    if (!custId) {
+      toast.error("Please sign in to save addresses.");
       return;
     }
     try {
-      if (editing) await updateAddress(editing.name, values);
-      else await createAddress(customer, values);
-      toast.success(editing ? "Address updated" : "Address added");
+      if (editing) {
+        await updateAddress(editing.name, values);
+      } else {
+        await createAddress(custId, values);
+      }
+      toast.success(editing ? "Address updated successfully" : "Address added successfully");
       onChanged();
-    } catch {
-      toast.error("Could not save the address in ERPNext.");
-    }
-  }
-
-  async function markDefault(a: Address, kind: "shipping" | "billing") {
-    try {
-      await setDefaultAddress(a.name, kind);
-      toast.success(`Default ${kind} address updated`);
-      onChanged();
-    } catch {
-      toast.error("Could not update the default address.");
-    }
-  }
-
-  async function drop(a: Address) {
-    try {
-      await removeAddress(a.name);
-      toast.success("Address removed");
-      onChanged();
-    } catch {
-      toast.error("Could not delete the address.");
+    } catch (err: any) {
+      console.error("Save Address Error:", err);
+      const msg = err.response?.data?.exception || err.message || "Could not save the address in ERPNext.";
+      toast.error(msg);
     }
   }
 
@@ -82,7 +67,7 @@ export function AddressBook({
             setOpen(true);
           }}
         >
-          Add new address
+          + Add address
         </Button>
       </div>
 
@@ -118,7 +103,7 @@ export function AddressBook({
 
               <p className="text-sm text-muted-foreground">{formatAddress(a)}</p>
 
-              <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+              <div className="border-t border-border pt-3">
                 <Button
                   size="sm"
                   variant="outline"
@@ -129,37 +114,6 @@ export function AddressBook({
                   }}
                 >
                   <Pencil className="h-3.5 w-3.5" /> Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void markDefault(a, "shipping");
-                  }}
-                >
-                  Set shipping
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void markDefault(a, "billing");
-                  }}
-                >
-                  Set billing
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void drop(a);
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete
                 </Button>
               </div>
             </article>

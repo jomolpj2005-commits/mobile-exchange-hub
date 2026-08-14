@@ -31,22 +31,43 @@ export const Route = createFileRoute("/products/")({
 });
 
 const PAGE_SIZE = 6;
-const GROUPS = ["All", "Smartphones", "Foldables", "Accessories", "Spare Parts"];
+const GROUPS = ["Smartphones", "Refurbished Products", "Accessories"];
 
 function ProductsPage() {
   const { data, loading } = useFetch(() => getProducts(), []);
   const { add } = useCart();
   const [query, setQuery] = useState("");
-  const [group, setGroup] = useState("All");
+  const [group, setGroup] = useState("Smartphones");
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
     const list = data ?? [];
-    return list.filter(
-      (p) =>
-        (group === "All" || p.item_group === group) &&
-        `${p.item_name} ${p.name} ${p.brand}`.toLowerCase().includes(query.toLowerCase()),
-    );
+    return list.filter((p) => {
+      const isRefurbItem =
+        p.item_group === "Refurbished Products" ||
+        p.item_group === "Refurbished" ||
+        p.item_group === "Refurbished Phones" ||
+        p.name?.startsWith("REF-") ||
+        (p.warehouse && p.warehouse.includes("Refurbishment Warehouse"));
+
+      const matchesGroup =
+        (group === "Smartphones" && (p.item_group === "Finished Products" || p.item_group === "Smartphones") && !isRefurbItem) ||
+        (group === "Refurbished Products" && isRefurbItem) ||
+        (group === "Spare Parts" && (p.item_group === "Spare Parts" || p.item_group === "Raw Material")) ||
+        (p.item_group === group && !isRefurbItem);
+
+      const matchesSearch = `${p.item_name} ${p.name} ${p.brand || ""}`
+        .toLowerCase()
+        .includes(query.toLowerCase());
+
+      if (group === "Refurbished Products") {
+        const isRefurbWh = Boolean(p.warehouse && p.warehouse.includes("Refurbishment Warehouse"));
+        const availStock = p.stock_qty ?? p.available_qty ?? (p.actual_qty != null ? p.actual_qty - (p.reserved_qty || 0) : 0);
+        if (!isRefurbWh || availStock <= 0) return false;
+      }
+
+      return matchesGroup && matchesSearch;
+    });
   }, [data, query, group]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -86,14 +107,17 @@ function ProductsPage() {
                 key={p.name}
                 product={p}
                 onAdd={(product) => {
+                  const maxStock = product.stock_qty ?? (product as any).available_qty ?? (product as any).actual_qty;
                   add({
                     item_code: product.name,
                     item_name: product.item_name,
                     rate: product.standard_rate,
                     qty: 1,
                     condition: product.condition,
+                    stock_qty: maxStock,
+                    available_qty: maxStock,
                   });
-                  toast.success(`${product.item_name} added to cart`);
+                  toast.success(`${product.item_name} added to cart & Draft Quotation updated in ERPNext!`);
                 }}
               />
             ))}

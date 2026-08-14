@@ -1,8 +1,10 @@
 export function formatCurrency(value: number) {
+  const hasDecimals = (value || 0) % 1 !== 0;
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: 2,
   }).format(value || 0);
 }
 

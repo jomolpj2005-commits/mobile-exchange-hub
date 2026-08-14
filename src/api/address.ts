@@ -1,18 +1,10 @@
-import { callMethod, createDoc, deleteDoc, getList, updateDoc, withFallback } from "./client";
+import { callMethod, deleteDoc, withFallback } from "./client";
 import type { Address } from "@/types";
 
-const FIELDS =
-  '["name","address_title","address_line1","address_line2","city","state","country","pincode","phone","is_primary_address","is_shipping_address"]';
-
-/** All addresses linked to a Customer through Dynamic Link. */
-export function getCustomerAddresses(customer: string) {
+/** All addresses linked to a Customer through Dynamic Link (bypassing 403 permission blocks). */
+export async function getCustomerAddresses(customer?: string | null): Promise<Address[]> {
   return withFallback(
-    () =>
-      getList<Address>("Address", {
-        fields: FIELDS,
-        filters: `[["Dynamic Link","link_name","=","${customer}"]]`,
-        limit_page_length: 50,
-      }),
+    () => callMethod<Address[]>("mobile_management.api.get_customer_addresses", { customer_name: customer }),
     [] as Address[],
   );
 }
@@ -23,16 +15,18 @@ export async function getDefaultAddress(customer: string, kind: "shipping" | "bi
   return list.find((a) => a[flag] === 1) ?? list[0] ?? null;
 }
 
-export function createAddress(customer: string, doc: Partial<Address>) {
-  return createDoc<Address>("Address", {
-    ...doc,
-    doctype: "Address",
-    links: [{ link_doctype: "Customer", link_name: customer }],
+export async function createAddress(customer: string, doc: Partial<Address>) {
+  return callMethod("mobile_management.api.save_customer_address", {
+    customer_name: customer,
+    address_data: doc,
   });
 }
 
-export function updateAddress(name: string, doc: Partial<Address>) {
-  return updateDoc<Address>("Address", name, doc);
+export async function updateAddress(name: string, doc: Partial<Address>) {
+  return callMethod("mobile_management.api.save_customer_address", {
+    address_name: name,
+    address_data: doc,
+  });
 }
 
 export function removeAddress(name: string) {
@@ -40,5 +34,5 @@ export function removeAddress(name: string) {
 }
 
 export function setDefaultAddress(name: string, kind: "shipping" | "billing" = "shipping") {
-  return callMethod("mobile_erp.address.set_default", { name, kind });
+  return callMethod("mobile_management.api.set_default", { name, kind });
 }

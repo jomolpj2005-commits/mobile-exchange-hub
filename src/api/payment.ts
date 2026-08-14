@@ -16,7 +16,7 @@ export function createRazorpayOrder(payload: {
   amount: number;
   currency?: string;
 }) {
-  return callMethod<RazorpayOrder>("mobile_erp.payment.create_razorpay_order", payload);
+  return callMethod<RazorpayOrder>("mobile_management.api.create_razorpay_order", payload);
 }
 
 /** Signature verification + Payment Entry creation happen server-side. */
@@ -26,30 +26,40 @@ export function verifyRazorpayPayment(payload: {
   razorpay_payment_id: string;
   razorpay_signature: string;
 }) {
-  return callMethod<{ payment_entry: string; status: string }>(
-    "mobile_erp.payment.verify_razorpay_payment",
-    payload,
-  );
+  return callMethod<{
+    status: string;
+    sales_order: string;
+    delivery_note: string;
+    sales_invoice: string;
+    payment_entry: string;
+  }>("mobile_management.api.verify_razorpay_payment", payload);
 }
 
 export function createPaymentEntry(doc: unknown) {
   return createDoc("Payment Entry", doc);
 }
 
-export function createCashOnDeliveryOrder(payload: { sales_order: string }) {
-  return callMethod<{ sales_order: string; payment_status: string }>(
-    "mobile_erp.payment.create_cod_order",
-    payload,
-  );
+export function createCashOnDeliveryOrder(payload: { sales_order: string; payment_mode?: string }) {
+  return callMethod<{
+    status: string;
+    sales_order: string;
+    delivery_note: string;
+    sales_invoice: string;
+    payment_entry: string;
+  }>("mobile_management.api.process_order_payment_and_create_drafts", {
+    sales_order: payload.sales_order,
+    payment_mode: payload.payment_mode || "Cash in Hand",
+  });
 }
 
 export function updateSalesOrderPaymentStatus(sales_order: string, status: string) {
-  return callMethod("mobile_erp.payment.update_payment_status", { sales_order, status });
+  return callMethod("mobile_management.api.update_payment_status", { sales_order, status });
 }
 
 export function getPaymentStatus(sales_order: string) {
   return withFallback(
-    () => callMethod<{ status: string }>("mobile_erp.payment.get_payment_status", { sales_order }),
+    () => callMethod<{ status: string }>("mobile_management.api.get_payment_status", { sales_order }),
     { status: "Unpaid" },
   );
 }
+

@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { logout } from "@/api/auth";
 import { updateCustomerProfile } from "@/api/customer";
 import { useCustomer } from "@/hooks/useCustomer";
-import { ERP_URL } from "@/api/client";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -33,7 +32,6 @@ const PERSONAL: { key: string; label: string; type?: string }[] = [
   { key: "email_id", label: "Email", type: "email" },
   { key: "mobile_no", label: "Mobile number", type: "tel" },
   { key: "alternative_mobile_no", label: "Alternative mobile number", type: "tel" },
-  { key: "company_name", label: "Company name (optional)" },
 ];
 
 function ProfilePage() {
@@ -43,12 +41,14 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!customer) return;
-    setValues(
-      Object.fromEntries(
-        PERSONAL.map((f) => [f.key, String((customer as Record<string, unknown>)[f.key] ?? "")]),
-      ),
-    );
+    if (customer) {
+      setValues({
+        customer_name: customer.customer_name || "",
+        email_id: customer.email_id || "",
+        mobile_no: customer.mobile_no || "",
+        alternative_mobile_no: customer.alternative_mobile_no || "",
+      });
+    }
   }, [customer]);
 
   async function save() {
@@ -58,11 +58,15 @@ function ProfilePage() {
     }
     setSaving(true);
     try {
-      await updateCustomerProfile(customer.name, values);
+      const res = await updateCustomerProfile(customer.name, values);
+      if (values["email_id"]) {
+        localStorage.setItem("active_dealer_email", values["email_id"]);
+      }
       toast.success("Profile updated in ERPNext");
-      reload();
-    } catch {
-      toast.error("Could not update the Customer record.");
+      await reload();
+    } catch (err: any) {
+      console.error("=== SAVE FAILED ===", err);
+      toast.error(err.response?.data?.exception || err.message || "Update failed.");
     } finally {
       setSaving(false);
     }
@@ -99,23 +103,32 @@ function ProfilePage() {
 
           <section className="erp-panel space-y-4 p-5">
             <h2 className="text-sm font-semibold">Personal information</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {PERSONAL.map((f) => (
-                <div key={f.key} className="space-y-2">
-                  <Label htmlFor={f.key}>{f.label}</Label>
-                  <Input
-                    id={f.key}
-                    type={f.type ?? "text"}
-                    value={values[f.key] ?? ""}
-                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  />
-                </div>
-              ))}
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {PERSONAL.map((f) => (
+                  <div key={f.key} className="space-y-2">
+                    <Label htmlFor={f.key}>{f.label}</Label>
+                    <Input
+                      id={f.key}
+                      type={f.type ?? "text"}
+                      value={values[f.key] ?? ""}
+                      onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* --- Standard Native HTML button --- */}
+              <button
+                type="button"
+                onClick={save}
+                disabled={saving}
+                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                {saving ? "Saving..." : "Save changes"}
+              </button>
             </div>
-            <Button onClick={save} disabled={saving}>
-              Save changes
-            </Button>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-2">
               Saved with PUT /api/resource/Customer — validation stays in ERPNext.
             </p>
           </section>
@@ -126,10 +139,6 @@ function ProfilePage() {
               addresses={addresses}
               onChanged={reload}
             />
-          </section>
-
-          <section className="erp-panel p-5 text-xs text-muted-foreground">
-            Backend: {ERP_URL ? ERP_URL : "not configured (set VITE_ERP_URL)"}
           </section>
         </>
       )}

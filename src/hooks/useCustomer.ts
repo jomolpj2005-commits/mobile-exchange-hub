@@ -15,6 +15,9 @@ export function useCustomer() {
     setCustomer(profile);
     setAddresses(profile ? await getCustomerAddresses(profile.name) : []);
     setLoading(false);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("erp-cart-change"));
+    }
   }, []);
 
   useEffect(() => {

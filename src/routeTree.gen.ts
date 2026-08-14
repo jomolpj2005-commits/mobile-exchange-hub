@@ -13,13 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DealersRouteImport } from './routes/dealers'
-import { Route as ExchangeRouteImport } from './routes/exchange'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RefurbishmentRouteImport } from './routes/refurbishment'
+import { Route as ExchangeIndexRouteImport } from './routes/exchange.index'
 import { Route as ExchangeNewRouteImport } from './routes/exchange.new'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsIdRouteImport } from './routes/products.$id'
@@ -42,11 +42,6 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const DealersRoute = DealersRouteImport.update({
   id: '/dealers',
   path: '/dealers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExchangeRoute = ExchangeRouteImport.update({
-  id: '/exchange',
-  path: '/exchange',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -79,10 +74,15 @@ const RefurbishmentRoute = RefurbishmentRouteImport.update({
   path: '/refurbishment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExchangeIndexRoute = ExchangeIndexRouteImport.update({
+  id: '/exchange/',
+  path: '/exchange/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExchangeNewRoute = ExchangeNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ExchangeRoute,
+  id: '/exchange/new',
+  path: '/exchange/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
@@ -100,7 +100,6 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
@@ -109,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
+  '/exchange/': typeof ExchangeIndexRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -116,7 +116,6 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
@@ -125,6 +124,7 @@ export interface FileRoutesByTo {
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
+  '/exchange': typeof ExchangeIndexRoute
   '/products': typeof ProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -133,7 +133,6 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/dealers': typeof DealersRoute
-  '/exchange': typeof ExchangeRouteWithChildren
   '/login': typeof LoginRoute
   '/order-success': typeof OrderSuccessRoute
   '/orders': typeof OrdersRoute
@@ -142,6 +141,7 @@ export interface FileRoutesById {
   '/refurbishment': typeof RefurbishmentRoute
   '/exchange/new': typeof ExchangeNewRoute
   '/products/$id': typeof ProductsIdRoute
+  '/exchange/': typeof ExchangeIndexRoute
   '/products/': typeof ProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -151,7 +151,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/dealers'
-    | '/exchange'
     | '/login'
     | '/order-success'
     | '/orders'
@@ -160,6 +159,7 @@ export interface FileRouteTypes {
     | '/refurbishment'
     | '/exchange/new'
     | '/products/$id'
+    | '/exchange/'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -167,7 +167,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/dealers'
-    | '/exchange'
     | '/login'
     | '/order-success'
     | '/orders'
@@ -176,6 +175,7 @@ export interface FileRouteTypes {
     | '/refurbishment'
     | '/exchange/new'
     | '/products/$id'
+    | '/exchange'
     | '/products'
   id:
     | '__root__'
@@ -183,7 +183,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/dealers'
-    | '/exchange'
     | '/login'
     | '/order-success'
     | '/orders'
@@ -192,6 +191,7 @@ export interface FileRouteTypes {
     | '/refurbishment'
     | '/exchange/new'
     | '/products/$id'
+    | '/exchange/'
     | '/products/'
   fileRoutesById: FileRoutesById
 }
@@ -200,14 +200,15 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   DealersRoute: typeof DealersRoute
-  ExchangeRoute: typeof ExchangeRouteWithChildren
   LoginRoute: typeof LoginRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
   OrdersRoute: typeof OrdersRoute
   PaymentRoute: typeof PaymentRoute
   ProfileRoute: typeof ProfileRoute
   RefurbishmentRoute: typeof RefurbishmentRoute
+  ExchangeNewRoute: typeof ExchangeNewRoute
   ProductsIdRoute: typeof ProductsIdRoute
+  ExchangeIndexRoute: typeof ExchangeIndexRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
@@ -239,13 +240,6 @@ declare module '@tanstack/react-router' {
       path: '/dealers'
       fullPath: '/dealers'
       preLoaderRoute: typeof DealersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/exchange': {
-      id: '/exchange'
-      path: '/exchange'
-      fullPath: '/exchange'
-      preLoaderRoute: typeof ExchangeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -290,12 +284,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RefurbishmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exchange/': {
+      id: '/exchange/'
+      path: '/exchange'
+      fullPath: '/exchange/'
+      preLoaderRoute: typeof ExchangeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/exchange/new': {
       id: '/exchange/new'
-      path: '/new'
+      path: '/exchange/new'
       fullPath: '/exchange/new'
       preLoaderRoute: typeof ExchangeNewRouteImport
-      parentRoute: typeof ExchangeRoute
+      parentRoute: typeof rootRouteImport
     }
     '/products/': {
       id: '/products/'
@@ -314,33 +315,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ExchangeRouteChildren {
-  ExchangeNewRoute: typeof ExchangeNewRoute
-}
-
-const ExchangeRouteChildren: ExchangeRouteChildren = {
-  ExchangeNewRoute: ExchangeNewRoute,
-}
-
-const ExchangeRouteWithChildren = ExchangeRoute._addFileChildren(
-  ExchangeRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   DealersRoute: DealersRoute,
-  ExchangeRoute: ExchangeRouteWithChildren,
   LoginRoute: LoginRoute,
   OrderSuccessRoute: OrderSuccessRoute,
   OrdersRoute: OrdersRoute,
   PaymentRoute: PaymentRoute,
   ProfileRoute: ProfileRoute,
   RefurbishmentRoute: RefurbishmentRoute,
+  ExchangeNewRoute: ExchangeNewRoute,
   ProductsIdRoute: ProductsIdRoute,
+  ExchangeIndexRoute: ExchangeIndexRoute,
   ProductsIndexRoute: ProductsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

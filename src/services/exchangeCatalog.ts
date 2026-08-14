@@ -1,14 +1,6 @@
 /** UI catalogue for the exchange wizard. Replace with ERPNext master data via api/exchange. */
 import {
-  Gamepad2,
-  Headphones,
-  Laptop,
-  MonitorSmartphone,
   Smartphone,
-  Speaker,
-  Tablet,
-  Tv,
-  Watch,
   type LucideIcon,
 } from "lucide-react";
 
@@ -20,27 +12,11 @@ export type ExchangeCategory = {
 };
 
 export const exchangeCategories: ExchangeCategory[] = [
-  { slug: "smartphones", name: "Smartphones", description: "Android & iOS handsets of any brand", icon: Smartphone },
-  { slug: "tablets", name: "Tablets", description: "Tablets and iPads, Wi-Fi or cellular", icon: Tablet },
-  { slug: "smart-watches", name: "Smart Watches", description: "Fitness bands and smart watches", icon: Watch },
-  { slug: "laptops", name: "Laptops", description: "Notebooks, ultrabooks and MacBooks", icon: Laptop },
-  { slug: "speakers", name: "Speakers", description: "Bluetooth and smart speakers", icon: Speaker },
-  { slug: "earbuds", name: "Earbuds", description: "TWS earbuds and headphones", icon: Headphones },
-  { slug: "smart-tvs", name: "Smart TVs", description: "LED, QLED and OLED smart TVs", icon: Tv },
-  { slug: "gaming-consoles", name: "Gaming Consoles", description: "Home and handheld consoles", icon: Gamepad2 },
-  { slug: "other-electronics", name: "Other Electronics", description: "Cameras, monitors and more", icon: MonitorSmartphone },
+  { slug: "smartphones", name: "Mobile Phone", description: "Android & iOS handsets of any brand", icon: Smartphone },
 ];
 
 export const exchangeBrands: Record<string, string[]> = {
-  smartphones: ["Samsung", "Apple", "OnePlus", "Google Pixel", "Nothing", "Motorola", "Xiaomi", "Realme", "Vivo", "Oppo"],
-  tablets: ["Apple", "Samsung", "Lenovo", "Xiaomi", "OnePlus", "Realme"],
-  "smart-watches": ["Apple", "Samsung", "Noise", "boAt", "Garmin", "Amazfit"],
-  laptops: ["Apple", "Dell", "HP", "Lenovo", "Asus", "Acer"],
-  speakers: ["JBL", "Sony", "boAt", "Marshall", "Bose"],
-  earbuds: ["Apple", "Samsung", "OnePlus", "boAt", "Sony", "Nothing"],
-  "smart-tvs": ["Samsung", "LG", "Sony", "Xiaomi", "TCL", "OnePlus"],
-  "gaming-consoles": ["Sony", "Microsoft", "Nintendo", "Valve"],
-  "other-electronics": ["Canon", "Nikon", "GoPro", "Dell", "LG"],
+  smartphones: ["Apple", "Samsung", "OnePlus", "Google Pixel", "Nothing", "Motorola", "Xiaomi", "Realme", "Vivo", "Oppo"],
 };
 
 export const ramOptions = ["2 GB", "3 GB", "4 GB", "6 GB", "8 GB", "12 GB", "16 GB"];
